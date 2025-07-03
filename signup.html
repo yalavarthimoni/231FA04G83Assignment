@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Become my Child!</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="stylenav.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="login.html" id="login-btn">Login</a>
+        <a href="signup.html" id="signup-btn">Sign Up</a>
+        <a href="#" id="logout-btn" onclick="logout()" style="display: none">
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <h2>Sign Up</h2>
+    <input type="text" id="newuser" placeholder="Choose username" />
+    <input type="password" id="newpass" placeholder="Choose password" />
+    <button onclick="signupUser()">Sign Up</button>
+
+    <script>
+      function signupUser() {
+        const user = document.getElementById("newuser").value.trim();
+        const pass = document.getElementById("newpass").value;
+
+        if (!user || !pass) {
+          alert("Fill in all fields");
+          return;
+        }
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+        const userExists = users.some((u) => u.username === user);
+        if (userExists) {
+          alert("That username already exists. Try another one!");
+          return;
+        }
+        users.push({ username: user, password: pass });
+        localStorage.setItem("users", JSON.stringify(users));
+
+        alert("Account created! Now login.");
+        window.location.href = "login.html";
+      }
+
+      window.onload = () => {
+        const loginBtn = document.getElementById("login-btn");
+        const signupBtn = document.getElementById("signup-btn");
+        const logoutBtn = document.getElementById("logout-btn");
+        const isLoggedIn = localStorage.getItem("userLoggedIn");
+
+        if (loginBtn && signupBtn && logoutBtn) {
+          if (isLoggedIn === "true") {
+            loginBtn.style.display = "none";
+            signupBtn.style.display = "none";
+            logoutBtn.style.display = "inline";
+          } else {
+            logoutBtn.style.display = "none";
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

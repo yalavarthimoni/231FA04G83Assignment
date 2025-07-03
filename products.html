@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Products on Moby</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="stylenav.css" />
+    <style>
+      .category-bar {
+        display: flex;
+      }
+      .category-bar button {
+        margin: 5px;
+        padding: 8px 16px;
+        border: none;
+        background-color: #008cba;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .category-bar button:hover {
+        background-color: #005f78;
+      }
+
+      .product-card {
+        width: 22%;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px;
+        text-align: center;
+      }
+
+      .product-card img {
+        max-width: 100px;
+        max-height: 100px;
+      }
+
+      .product-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="login.html" id="login-btn">Login</a>
+        <a href="signup.html" id="signup-btn">Sign Up</a>
+        <a href="#" id="logout-btn" onclick="logout()" style="display: none">
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <h1>All Products</h1>
+
+    <div class="category-bar" id="category-bar"></div>
+    <div class="product-container" id="product-container"></div>
+
+    <script>
+      let allProducts = [];
+
+      fetch("https://fakestoreapi.in/api/products")
+        .then((res) => res.json())
+        .then((data) => {
+          allProducts = data.products;
+          if (!Array.isArray(allProducts)) {
+            console.error(
+              "API response doesn't have a valid products array",
+              data
+            );
+            return;
+          }
+
+          displayCategories(allProducts);
+          displayProducts(allProducts);
+        })
+        .catch((err) => {
+          console.error("Error fetching products:", err);
+        });
+
+      function displayCategories(products) {
+        const catBar = document.getElementById("category-bar");
+        const uniqueCats = ["All", ...new Set(products.map((p) => p.category))];
+
+        uniqueCats.forEach((cat) => {
+          const btn = document.createElement("button");
+          btn.innerText = cat;
+          btn.onclick = () => {
+            if (cat === "All") {
+              displayProducts(allProducts);
+            } else {
+              const filtered = allProducts.filter((p) => p.category === cat);
+              displayProducts(filtered);
+            }
+          };
+          catBar.appendChild(btn);
+        });
+      }
+
+      function displayProducts(products) {
+        const container = document.getElementById("product-container");
+        container.innerHTML = "";
+
+        products.forEach((prod) => {
+          const card = document.createElement("div");
+          card.className = "product-card";
+          card.innerHTML = `
+            <img src="${prod.image}" alt="Product" />
+            <h3>${prod.title}</h3>
+            <p>₹${prod.price}</p>
+            <button onclick="addToCart('${prod.id}')">Add to Cart</button>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      function addToCart(id) {
+        if (localStorage.getItem("userLoggedIn") !== "true") {
+          alert(
+            "To access the One Piece, you need the road poneglyphs, and to access the cart, you need to be logged in!"
+          );
+          return;
+        }
+
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        cart.push(id);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert("GUUUUURAAAARARARAAA—ADDED TO CART!");
+      }
+      window.onload = () => {
+        const loginBtn = document.getElementById("login-btn");
+        const signupBtn = document.getElementById("signup-btn");
+        const logoutBtn = document.getElementById("logout-btn");
+        const isLoggedIn = localStorage.getItem("userLoggedIn");
+
+        if (loginBtn && signupBtn && logoutBtn) {
+          if (isLoggedIn === "true") {
+            loginBtn.style.display = "none";
+            signupBtn.style.display = "none";
+            logoutBtn.style.display = "inline";
+          } else {
+            logoutBtn.style.display = "none";
+          }
+        }
+      };
+
+      function logout() {
+        localStorage.removeItem("userLoggedIn");
+        alert("GUURARAARA.....Logged out!");
+        location.reload();
+      }
+    </script>
+  </body>
+</html>

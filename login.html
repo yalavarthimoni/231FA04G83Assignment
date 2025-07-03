@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get on board the Moby Dick!</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="stylenav.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">Cart</a>
+        <a href="login.html" id="login-btn">Login</a>
+        <a href="signup.html" id="signup-btn">Sign Up</a>
+        <a href="#" id="logout-btn" onclick="logout()" style="display: none">
+          Logout
+        </a>
+      </div>
+    </div>
+
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="loginUser()">Login</button>
+
+    <script>
+      function loginUser() {
+        const user = document.getElementById("username").value.trim();
+        const pass = document.getElementById("password").value;
+
+        const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+        const validUser = users.find(
+          (u) => u.username === user && u.password === pass
+        );
+
+        if (validUser) {
+          localStorage.setItem("userLoggedIn", "true");
+          localStorage.setItem("currentUser", user);
+          alert("Login successful!");
+          window.location.href = "index.html";
+        } else {
+          alert("Incorrect username or password.");
+        }
+      }
+
+      window.onload = () => {
+        const loginBtn = document.getElementById("login-btn");
+        const signupBtn = document.getElementById("signup-btn");
+        const logoutBtn = document.getElementById("logout-btn");
+        const isLoggedIn = localStorage.getItem("userLoggedIn");
+
+        if (loginBtn && signupBtn && logoutBtn) {
+          if (isLoggedIn === "true") {
+            loginBtn.style.display = "none";
+            signupBtn.style.display = "none";
+            logoutBtn.style.display = "inline";
+          } else {
+            logoutBtn.style.display = "none";
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
